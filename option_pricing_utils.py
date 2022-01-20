@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 import time
 
 
@@ -105,3 +106,41 @@ def get_bs_option_price_binomial_real_world_probabilities(mu, r, sigma, s0, k, T
         print(f'Option price using step size {dt} is {V_prev[0]}')
     
     return V_prev[0]
+
+def get_bs_price_analytical(r, sigma, s0, k, T, display_result=True):
+
+    # Compute analytical solution of Black-Scholes model for a European call option
+
+    start = time.time()
+
+    # Black-Scholes Model Parameters
+    d1 = 1/(sigma*np.sqrt(T))*(np.log(s0/k) + (r + 1/2*sigma**2)*T)
+    d2 = d1 - sigma*np.sqrt(T)
+    option_price = s0*norm.cdf(d1) - np.exp(-r*T)*k*norm.cdf(d2)
+    end = time.time()
+
+    if display_result == True:
+        print(f'The time of execution of is: {end-start}')
+        print(f'Option price is {option_price}')
+    return option_price
+
+
+def get_bs_price_dividends(r, sigma, s0, k, T, dividend_array, display_result=True):
+
+    # Compute analytical solution of Black-Scholes model for a European call option on a stock paying lump-sum dividends
+
+    start = time.time()
+
+    # Black-Scholes Model Parameters
+    s0_adj = s0*np.cumprod(1-dividend_array)[-1]
+
+    d1 = 1/(sigma*np.sqrt(T))*(np.log(s0_adj/k) + (r + 1/2*sigma**2)*T)
+    d2 = d1 - sigma*np.sqrt(T)
+    option_price = s0*norm.cdf(d1) - np.exp(-r*T)*k*norm.cdf(d2)
+
+    end = time.time()
+
+    if display_result == True:
+        print(f'The time of execution of is: {end-start}')
+        print(f'Option price is {option_price}')
+    return option_price
