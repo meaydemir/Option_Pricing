@@ -63,7 +63,7 @@ def get_bs_option_price_binomial_real_world_probabilities(mu, r, sigma, s0, k, T
     # to compute the option price via an adjusted discount factor
 
     # This is mainly a demonstration of how remaining in the "real-world" probability measure complicates the underlying simulation, although
-    # they end up producing the same result (as they should)
+    # they end up producing the same result (note that we implicitly use a change of measure to obtain the final result)
     
     start = time.time()
 
