@@ -3,6 +3,12 @@ from scipy.stats import norm
 import time
 
 
+def get_d1_d2_values(S, K, T, sigma, r, q):
+    d1 = (np.log(S/K) + (r-q+sigma**2/2)*T)/(sigma*np.sqrt(T))
+    d2 = d1 - sigma*np.sqrt(T)
+    return d1, d2
+
+
 def get_bs_option_price_mc(r, sigma, s0, k, T, M, display_result=True):
     
     # Calculate Black-Scholes option price via Monte Carlo

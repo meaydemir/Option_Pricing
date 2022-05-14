@@ -1,4 +1,4 @@
-import option_pricing_utils as opu
+import Utils.option_pricing_utils as opu
 import numpy as np
 
 # Black-Scholes Model Parameters

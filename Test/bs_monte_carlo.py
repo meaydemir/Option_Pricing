@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import option_pricing_utils as opu
+import Utils.option_pricing_utils as opu
 
 
 # Black-Scholes Model Parameters
@@ -18,7 +18,7 @@ option_value_list = [opu.get_bs_option_price_mc(r, sigma, s0, k, T, M, display_r
 plt.plot(M_array, option_value_list)
 plt.xlabel('Number of Simulations')
 plt.ylabel('Average Option Value')
-plt.title(f'BS Model - Sigma: {sigma}, r: {r}, mu: {mu}, T: {T}, K: {k}, S0: {s0}')
+plt.title(f'BS Model - Sigma: {sigma}, r: {r}, T: {T}, K: {k}, S0: {s0}')
 plt.show()
 
 print(f'Option Value ~= {option_value_list[-1]}')

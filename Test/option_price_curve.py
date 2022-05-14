@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import option_pricing_utils as opu
+import Utils.option_pricing_utils as opu
 
 # Black-Scholes Model Parameters
 sigma = 0.1
