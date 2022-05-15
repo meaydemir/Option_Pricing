@@ -113,16 +113,22 @@ def get_bs_option_price_binomial_real_world_probabilities(mu, r, sigma, s0, k, T
     
     return V_prev[0]
 
-def get_bs_price_analytical(r, sigma, s0, k, T, display_result=True):
+def get_bs_price_analytical(S, K, T, sigma, r, q, type, display_result=True):
 
     # Compute analytical solution of Black-Scholes model for a European call option
 
     start = time.time()
 
     # Black-Scholes Model Parameters
-    d1 = 1/(sigma*np.sqrt(T))*(np.log(s0/k) + (r + 1/2*sigma**2)*T)
-    d2 = d1 - sigma*np.sqrt(T)
-    option_price = s0*norm.cdf(d1) - np.exp(-r*T)*k*norm.cdf(d2)
+    d1, d2 = get_d1_d2_values(S, K, T, sigma, r, q)
+    price_call = S*norm.cdf(d1) - np.exp(-r*T)*K*norm.cdf(d2)
+
+    if type.lower() == 'c':
+        option_price = price_call
+    elif type.lower() == 'p':
+        option_price = price_call - S + K*np.exp(-r*T)
+    else:
+        option_price = np.nan
     end = time.time()
 
     if display_result == True:
