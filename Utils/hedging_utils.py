@@ -33,7 +33,7 @@ def simulate_delta_hedge(S0, K, T, sigma, r, q, type, option_exposure, M):
     for i in range(1, M):
         summary_df.loc[i, 'Cumulative_Cost_Inc_Interest'] = summary_df.loc[i-1, 'Cumulative_Cost_Inc_Interest'] + summary_df.loc[i, 'Cost_of_Shares_Purchased']+ summary_df.loc[i, 'Interest_Cost']
 
-    hedging_cost = summary_df['Cumulative_Cost_Inc_Interest'].iloc[-1] - np.exp(-r*T)*summary_df['Shares_Held'].iloc[-1]*K
+    hedging_cost = summary_df['Cumulative_Cost_Inc_Interest'].iloc[-1] - summary_df['Shares_Held'].iloc[-1]*K
     discounted_hedging_cost = np.exp(-r*T)*hedging_cost
 
     return discounted_hedging_cost
