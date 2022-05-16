@@ -9,14 +9,21 @@ def get_d1_d2_values(S, K, T, sigma, r, q):
     return d1, d2
 
 
-def get_bs_option_price_mc(r, sigma, s0, k, T, M, display_result=True):
+def get_bs_option_price_mc(s0, k, T, sigma, r, q, type, M, display_result=True):
     
     # Calculate Black-Scholes option price via Monte Carlo
 
     start = time.time()
     W = np.random.normal(loc=0.0, scale=T, size=M)
-    s_array = s0*np.exp((r-0.5*sigma**2)*T + sigma*W)
-    option_payoff_array = np.maximum(s_array - k, 0)  # European call option
+    s_array = s0*np.exp((r-q-0.5*sigma**2)*T + sigma*W)
+
+    if type.lower() == 'c':
+        option_payoff_array = np.maximum(s_array - k, 0)  # European call option
+    elif type.lower() == 'p':
+        option_payoff_array = np.maximum(k - s_array, 0)  # European call option
+    else:
+        option_payoff_array = np.nan
+
     discounted_option_payoff_array = np.exp(-r*T)*option_payoff_array
     bs_option_price = np.mean(discounted_option_payoff_array)
     end = time.time()
@@ -28,28 +35,33 @@ def get_bs_option_price_mc(r, sigma, s0, k, T, M, display_result=True):
     return bs_option_price
 
 
-def get_bs_option_price_binomial(r, sigma, s0, k, T, dt, display_result=True):
+def get_bs_option_price_binomial(s0, k, T, sigma, r, q, type, N, display_result=True):
 
     # Calculate the price of an option using a binomial tree (parameters allow convergence to Black-Scholes solution with small step size)
     start = time.time()
 
     # Define parameters
-    t_array = np.arange(start=0, step=dt, stop=T + dt)
-    n = len(t_array) - 1
-    u = np.exp(sigma*np.sqrt(T/n))
+    t_array = np.linspace(0, T, N)
+    dt = t_array[1] - t_array[0]
+    u = np.exp(sigma*np.sqrt(dt))
     d = 1/u
 
     # Risk-neutral probabilities
-    p = (np.exp(r*dt)-d)/(u-d)
+    p = (np.exp((r-q)*dt)-d)/(u-d)
     q = 1 - p
 
     # Build boundary conditions
-    S_T = np.array([s0*u**(n-i)*d**i for i in range(n+1)])
-    V_T = np.maximum(S_T-k, 0)
+    S_T = np.array([s0*u**(N-1-i)*d**i for i in range(N)])
+    if type.lower() == 'c':
+        V_T = np.maximum(S_T - k, 0)
+    elif type.lower() == 'p':
+        V_T = np.maximum(k - S_T, 0)
+    else:
+        V_T = np.nan
 
     # Propagate backwards in tree and solve for option value at each node
     V_curr = V_T
-    for i in range(n): # Loop backwards through each step in the tree
+    for i in range(N-1): # Loop backwards through each step in the tree
         m = len(V_curr) - 1
         V_prev = [np.exp(-r*dt)*(p*V_curr[j] + q*V_curr[j+1]) for j in range(m)] # Calculate the value at each node
         V_curr = V_prev
@@ -121,12 +133,12 @@ def get_bs_price_analytical(S, K, T, sigma, r, q, type, display_result=True):
 
     # Black-Scholes Model Parameters
     d1, d2 = get_d1_d2_values(S, K, T, sigma, r, q)
-    price_call = S*norm.cdf(d1) - np.exp(-r*T)*K*norm.cdf(d2)
+    price_call = np.exp(-q*T)*S*norm.cdf(d1) - np.exp(-r*T)*K*norm.cdf(d2)
 
     if type.lower() == 'c':
         option_price = price_call
     elif type.lower() == 'p':
-        option_price = price_call - S + K*np.exp(-r*T)
+        option_price = price_call - np.exp(-q*T)*S + K*np.exp(-r*T)
     else:
         option_price = np.nan
     end = time.time()

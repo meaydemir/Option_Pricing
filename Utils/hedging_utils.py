@@ -4,18 +4,18 @@ import Utils.greeks as gr
 import Utils.option_pricing_utils as opu
 
 
-def simulate_gbm(S0, T_array, sigma, r, q, M):
+def simulate_gbm(S0, T_array, sigma, mu, q, M):
     W = np.random.normal(loc=0.0, scale=1.0, size=M)
     dt = T_array[0] - T_array[1]
     S = np.zeros(M)
     S[0] = S0
     for i in range(M-1):
-        S[i+1] = S[i] + (r-q)*S[i]*dt + sigma*S[i]*W[i]*np.sqrt(dt)
+        S[i+1] = S[i] + (mu-q)*S[i]*dt + sigma*S[i]*W[i]*np.sqrt(dt)
     return S
 
 def simulate_delta_hedge(S0, K, T, sigma, r, q, type, option_exposure, M):
     T_array = np.linspace(T, 0, M)
-    S = simulate_gbm(S0, T_array, sigma, r, q, M)
+    S = simulate_gbm(S0, T_array, sigma, r, q, M) # Note that mu can be any number, since regardless of the path we are replicating the option value - we have set it to r
     dt = T_array[0] - T_array[1]
 
     # Calculate option Greeks
