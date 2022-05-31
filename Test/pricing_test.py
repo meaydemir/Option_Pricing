@@ -16,7 +16,7 @@ opu.get_bs_option_price_mc(s0, k, T, sigma, r, q, type, M=1000000, display_resul
 print('\n')
 
 print('Binomial Tree Under Risk-Neutral Probability Measure')
-opu.get_bs_option_price_binomial(s0, k, T, sigma, r, q, type, N=1000, display_result=True)
+opu.get_bs_option_price_binomial(s0, k, T, sigma, r, q, type, N=100, display_result=True)
 print('\n')
 
 print('Binomial Tree Under Real-World Probability Measure')
